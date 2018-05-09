@@ -8,6 +8,7 @@ import traceback
 
 import Help
 import Logging
+import Parser
 
 
 log = Logging.Log()
@@ -19,7 +20,8 @@ def main():
         sys.exit(1)
 
     try:
-        print(sys.argv)
+        log.debug(sys.argv)
+        parser = Parser.ParameterMapper()
 
     except:
 

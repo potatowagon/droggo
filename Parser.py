@@ -9,3 +9,16 @@ import getopt
 
 class ParameterMapper():
     params = {}
+    keywords = {
+        'file_path' : ['--fetch'],
+        'org' : ['--from'],
+        'find' : ['--find'],        
+        'replace' : ['--replace', '--rep']
+    }
+    argv = None
+
+    def __init__(self, argv):
+        self.argv = argv
+        self.fill()
+
+    def fill(self)
