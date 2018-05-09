@@ -21,8 +21,8 @@ def main():
 
     try:
         log.debug(sys.argv)
-        parser = Parser.ParameterMapper()
-
+        parser = Parser.ParameterMapper(sys.argv)
+        print(parser.params)
     except:
 
         sys.exit(1)
