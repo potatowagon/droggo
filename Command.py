@@ -1,12 +1,13 @@
+import Credentials
+
 class Command():
 
-    file_path = None
+    params = None
+    repos = []
+    credentials = None
     org = None
-    find = None
-    replace = None
-    repo = None
-    username = None
-    password = None
+    github = None
 
-    def __init__(self, paramsMap):
-        pass
+    def __init__(self, params):
+        self.params = params
+        self.credentials = Credentials.Credentials(params.credentials)
