@@ -12,6 +12,10 @@ log = Logging.Log()
 
 class ParameterMapper():
     params = {}
+    options = {}
+    optional_keywords = {
+        'mod' : ['--markofdroggo', '--mod']
+    }
     keywords = {
         'file_path' : ['--fetch'],
         'org' : ['--from'],
