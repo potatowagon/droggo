@@ -1,4 +1,7 @@
 import re
+import Logging
+
+log = Logging.Log()
 
 class Credentials():
     username = None
@@ -10,6 +13,8 @@ class Credentials():
             str = str.split(':')
             self.username = str[0]
             self.password = str[1]
+        else:
+            log.err("Invalid Credentials")
             
 def is_valid(str):
     valid = re.match(r'\w+:\w+', str)
