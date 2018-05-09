@@ -1,0 +1,6 @@
+# visual studio files
+.vscode/*
+
+# ignore compiled python files
+*.pyc
+
