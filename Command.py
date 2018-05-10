@@ -11,3 +11,6 @@ class Command():
     def __init__(self, params):
         self.params = params
         self.credentials = Credentials.Credentials(params.credentials)
+
+    def init_remote(self):
+        ##github
