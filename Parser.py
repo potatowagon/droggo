@@ -35,15 +35,18 @@ class ParameterMapper():
                 try:
                     index = self.argv.index(word)
                     break
-                except:
+                except Exception as e:
                     missing_count += 1
                     #searched through the whole list of keywords but unable to find keyword in argv
                     if missing_count == len(self.keywords[key]):
+                        print("Missing Argument for " + key)
+                        print(e)
                         log.err("Missing Argument for " + key)
                         sys.exit(1)
 
-            if key in self.params:
-                log.err("Duplicate parameter for " + key)
+            if key in self.params: 
+                #not working
+                print("Duplicate parameter for " + key)
                 sys.exit(1)
             else:
                 self.params[key] = self.argv[index+1]
