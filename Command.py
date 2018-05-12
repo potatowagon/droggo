@@ -1,4 +1,10 @@
 import Credentials
+import Logging
+
+from github import Github
+
+
+log = Logging.Log
 
 class Command():
 
@@ -13,4 +19,7 @@ class Command():
         self.credentials = Credentials.Credentials(params.credentials)
 
     def init_remote(self):
-        ##github
+        try:
+            self.github = Github(base_url="https://{self.credentials.username}/api/v3", login_or_token=self.credentials.password)
+        except:
+            log
