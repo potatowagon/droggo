@@ -7,7 +7,7 @@ import traceback
 
 import Logging
 
-log = Logging.Log()
+#log = Logging.Log()
 
 class ParameterMapper():
     params = {}
@@ -41,7 +41,7 @@ class ParameterMapper():
                     if missing_count == len(self.keywords[key]):
                         print("Missing Argument for " + key)
                         print(e)
-                        log.err("Missing Argument for " + key)
+                        #log.err("Missing Argument for " + key)
                         sys.exit(1)
 
             if key in self.params: 

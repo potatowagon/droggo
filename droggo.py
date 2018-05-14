@@ -8,6 +8,7 @@ import traceback
 import Help
 import Logging
 import Parser
+import Command
 
 
 log = Logging.Log()
@@ -22,8 +23,10 @@ def main():
         log.debug(sys.argv)
         parser = Parser.ParameterMapper(sys.argv)
         print(parser.params)
-    except:
-
+        command = Command.Command(parser.params)
+        command.execute()
+    except Exception as e:
+        print(e)
         sys.exit(1)
 
 if __name__ == "__main__":
