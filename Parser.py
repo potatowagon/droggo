@@ -15,11 +15,11 @@ class ParameterMapper():
         'mod' : ['--markofdroggo', '--mod']
     }
     optional_keywords = {
-        'host_name' : ['--host']
+        'host_name' : ['--host'],
+        'org' : ['--from']
     }
     keywords = {
         'file_path' : ['--fetch'],
-        'org' : ['--from'],
         'find' : ['--find'],        
         'replace' : ['--replace', '--rep'],
         'credentials' : ['-u']
