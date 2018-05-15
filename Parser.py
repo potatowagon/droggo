@@ -11,9 +11,11 @@ import Logging
 
 class ParameterMapper():
     params = {}
-    options = {}
-    optional_keywords = {
+    flags = {
         'mod' : ['--markofdroggo', '--mod']
+    }
+    optional_keywords = {
+        'host_name' : ['--host']
     }
     keywords = {
         'file_path' : ['--fetch'],
@@ -27,6 +29,8 @@ class ParameterMapper():
     def __init__(self, argv):
         self.argv = argv
         self.fill()
+        self.fill_optional()
+        self.fill_flags()
 
     def fill(self):
         for key in self.keywords:
@@ -51,4 +55,41 @@ class ParameterMapper():
             else:
                 self.params[key] = self.argv[index+1]
 
+    def fill_optional(self):
+        for key in self.optional_keywords:
+            found = True 
+            for word in self.optional_keywords[key]:
+                try:
+                    index = self.argv.index(word)
+                    break
+                except Exception as e:
+                    print(e)
+                    found = False
+                    
+            if(found):
+                if key in self.params: 
+                    #not working
+                    print("Duplicate parameter for " + key)
+                    sys.exit(1)
+                else:
+                    self.params[key] = self.argv[index+1]
+
+    def fill_flags(self):
+        for key in self.flags:
+            found = True 
+            for word in self.optional_keywords[key]:
+                try:
+                    index = self.argv.index(word)
+                    break
+                except Exception as e:
+                    print(e)
+                    found = False
+                    
+            if(found):
+                if key in self.params: 
+                    #not working
+                    print("Duplicate parameter for " + key)
+                    sys.exit(1)
+                else:
+                    self.params[key] = True
                 
