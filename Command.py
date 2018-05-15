@@ -1,11 +1,12 @@
 import os  # os.sep
 import sys  # sys.exit
 import traceback
+import requests
 
 import Credentials
 import Logging
 
-from github import Github
+
 
 
 #log = Logging.Log
@@ -15,51 +16,60 @@ class Command():
     params = None
     repos = []
     credentials = None
-    org = None
-    github = None
+    github_url = None
 
     def __init__(self, params):
         print("here")
         self.params = params
         self.credentials = Credentials.Credentials(params["credentials"])
 
-    def init_remote(self):
-        try:
-            print(self.credentials.username, self.credentials.password)
-            self.github = Github(base_url="https://{self.credentials.username}/api/v3", login_or_token=self.credentials.password)
-            print(self.github)
-        except Exception as e:
-            print(e)
-            print("Log in as enterprise failed. Now trying log in as personal github")
-            #log.info("Log in as enterprise failed. Now trying log in as personal github")
-            try:
-                self.github = Github(self.credentials.username, self.credentials.password)
-            except Exception as e:
-                print(e)
-                print("Login failed")
-                #log.err("Login failed")
-                sys.exit(1)
-
-        try:
-            pass
-        except Exception as e:
-            print(e)
-            
+    def set_github_url(self):
+        if "host_name" in self.params:
+            host_name = self.params["host_name"]
+            self.github_url = "https://" + host_name + "/api/v3"
+        else:
+            self.github_url = "https://api.github.com"
+        print("API calls made to " + self.github_url)
 
     def get_repos(self):
-        try:
-            #self.repos = self.org.get_repos()
-            self.repos = self.github.get_repos()
-        except Exception as e:
-            print(e)
+        self.set_github_url()
+        if "org" in self.params:
+            self.repos = self.get_org_repos(self.params["org"])
+        else:    
+            self.repos = self.get_user_repos()
 
     def execute(self):
-        self.init_remote()
         self.get_repos()
-        for repo in self.repos:
+        #for repo in self.repos:
             # self.clone()
             # self.find_and_replace()
             # self.PR()  
-            print(repo.name)
+            #print(repo.name)
+           # pass
         
+    def get_org_repos(self, org):
+        print("Feching repos from org:" + org)
+        r = requests.get(self.github_url + "/orgs/" + org + "/repos", auth=(self.credentials.username, self.credentials.password))
+        if(r.status_code == 200):
+            repos_json = r.json()
+            
+            for repo_json in repos_json:
+                self.repos.append(repo_json["name"])
         
+            print(self.repos)
+        else:
+            print(r.status_code)
+
+    def get_user_repos(self):
+        print("Feching repos from user:" + self.credentials.username)
+        r = requests.get(self.github_url + "/user/repos", auth=(self.credentials.username, self.credentials.password))
+        
+        if(r.status_code == 200):
+            repos_json = r.json()
+            
+            for repo_json in repos_json:
+                self.repos.append(repo_json["name"])
+            
+            print(self.repos)
+        else:
+            print(r.status_code)   
