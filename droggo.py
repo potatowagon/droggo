@@ -25,6 +25,7 @@ def main():
         print(parser.params)
         command = Command.Command(parser.params)
         command.execute()
+
     except Exception as e:
         print(e)
         sys.exit(1)
