@@ -22,6 +22,9 @@ class Command():
     github_api_url = None
     github_clone_url = None
     workspace = "./wip"
+    cloned_repo = None
+    repo_obj = Repo()
+    new_branch = None
 
     def __init__(self, params):
         self.params = params
@@ -90,13 +93,11 @@ class Command():
 
     def clone(self, repo):
         print("Now cloning " + repo)
-        join = osp.join
         os.mkdir(self.workspace)
-        repo_obj = Repo()
         self.set_github_clone_url(repo)
 
         try:
-            cloned_repo = repo_obj.clone_from(self.github_clone_url, self.workspace)
+            self.cloned_repo = self.repo_obj.clone_from(self.github_clone_url, self.workspace)
         except Exception as e:
             print(e)
 
@@ -112,6 +113,16 @@ class Command():
         with open(file_path, 'w') as file:
             file.write(filedata)
 
+    def create_new_branch(self):
+        arr = self.params["file_path"].split("/")
+        arr = arr[len(arr) - 1]
+        file_name = arr.split(".")[0]
+        print(file_name)
+        
+        self.new_branch = self.cloned_repo.create_head('droggo-' + file_name)
+        print("New branch created: " + 'droggo-' + file_name)
+        self.new_branch.checkout()
+        
     def execute(self):
         self.set_github_api_url()
         self.get_repos()
@@ -119,10 +130,11 @@ class Command():
         for repo in self.repos:
             self.clone(repo)
             self.find_and_replace(self.workspace + "/" + self.params["file_path"], self.params["find"], self.params["replace"])
+            self.create_new_branch()
+            # self.stage()
             # self.commit()
-            # self.PR()
+            # self.raise_PR()
             shutil.rmtree(self.workspace, onerror=onerror)
-
 
 def onerror(func, path, exc_info):
     """
