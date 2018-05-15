@@ -112,29 +112,36 @@ class Command():
         # Write the file out again
         with open(file_path, 'w') as file:
             file.write(filedata)
+        
+        print("Find and replace done")
 
     def create_new_branch(self):
         arr = self.params["file_path"].split("/")
         arr = arr[len(arr) - 1]
         file_name = arr.split(".")[0]
-        print(file_name)
-        
         self.new_branch = self.cloned_repo.create_head('droggo-' + file_name)
         print("New branch created: " + 'droggo-' + file_name)
         self.new_branch.checkout()
+
+    def stage(self):
+        git = self.cloned_repo.git
+        git.add("--all")
         
+    def commit(self):        
+        self.cloned_repo.index.commit("droggo commit")
+
     def execute(self):
         self.set_github_api_url()
         self.get_repos()
         print(self.repos)
         for repo in self.repos:
             self.clone(repo)
-            self.find_and_replace(self.workspace + "/" + self.params["file_path"], self.params["find"], self.params["replace"])
             self.create_new_branch()
-            # self.stage()
-            # self.commit()
+            self.find_and_replace(self.workspace + "/" + self.params["file_path"], self.params["find"], self.params["replace"])
+            self.stage()
+            #self.commit()
             # self.raise_PR()
-            shutil.rmtree(self.workspace, onerror=onerror)
+            #shutil.rmtree(self.workspace, onerror=onerror)
 
 def onerror(func, path, exc_info):
     """
