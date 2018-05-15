@@ -76,20 +76,21 @@ class ParameterMapper():
 
     def fill_flags(self):
         for key in self.flags:
-            found = True 
-            for word in self.optional_keywords[key]:
-                try:
-                    index = self.argv.index(word)
+            found = None 
+            for word in self.flags[key]:
+                if word in self.argv:
+                    found = True
                     break
-                except Exception as e:
-                    print(e)
-                    found = False
-                    
-            if(found):
-                if key in self.params: 
-                    #not working
-                    print("Duplicate parameter for " + key)
-                    sys.exit(1)
                 else:
-                    self.params[key] = True
+                    found = False
                 
+            if(found):
+                try:
+                    if key in self.params: 
+                        #not working
+                        print("Duplicate parameter for " + key)
+                        sys.exit(1)
+                    else:
+                        self.params[key] = True
+                except Exception as e:
+                    print(e)    
