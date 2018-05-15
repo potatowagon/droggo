@@ -139,9 +139,9 @@ class Command():
             self.create_new_branch()
             self.find_and_replace(self.workspace + "/" + self.params["file_path"], self.params["find"], self.params["replace"])
             self.stage()
-            #self.commit()
+            self.commit()
             # self.raise_PR()
-            #shutil.rmtree(self.workspace, onerror=onerror)
+            shutil.rmtree(self.workspace, onerror=onerror)
 
 def onerror(func, path, exc_info):
     """
