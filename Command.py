@@ -119,9 +119,10 @@ class Command():
         arr = self.params["file_path"].split("/")
         arr = arr[len(arr) - 1]
         file_name = arr.split(".")[0]
-        self.new_branch = self.cloned_repo.create_head('droggo-' + file_name)
-        print("New branch created: " + 'droggo-' + file_name)
-        self.new_branch.checkout()
+        self.new_branch_name = 'droggo-' + file_name
+        new_branch = self.cloned_repo.create_head(self.new_branch_name)
+        print("New branch created: " + self.new_branch_name)
+        new_branch.checkout()
 
     def stage(self):
         git = self.cloned_repo.git
@@ -129,6 +130,11 @@ class Command():
         
     def commit(self):        
         self.cloned_repo.index.commit("droggo commit")
+
+    def push(self):
+        remote = self.github_clone_url[:8] + self.credentials.username + ":" + self.credentials.password + "@" + self.github_clone_url[8:]
+        git = self.cloned_repo.git
+        git.push(remote, self.new_branch_name + ":" + self.new_branch_name)
 
     def execute(self):
         self.set_github_api_url()
@@ -140,6 +146,7 @@ class Command():
             self.find_and_replace(self.workspace + "/" + self.params["file_path"], self.params["find"], self.params["replace"])
             self.stage()
             self.commit()
+            self.push()
             # self.raise_PR()
             shutil.rmtree(self.workspace, onerror=onerror)
 
