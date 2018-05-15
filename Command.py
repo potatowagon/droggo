@@ -13,6 +13,7 @@ import Logging
 
 #log = Logging.Log
 
+
 class Command():
 
     params = None
@@ -39,12 +40,14 @@ class Command():
     def set_github_clone_url(self, repo):
         self.github_clone_url = "https://"
         if "host_name" in self.params:
-            self.github_clone_url = self.github_clone_url + self.params["host_name"] + "/"
+            self.github_clone_url = self.github_clone_url + \
+                self.params["host_name"] + "/"
         else:
             self.github_clone_url = self.github_clone_url + "github.com/"
-        
+
         if "org" in self.params:
-            self.github_clone_url = self.github_clone_url + self.params["org"] + "/"
+            self.github_clone_url = self.github_clone_url + \
+                self.params["org"] + "/"
         else:
             self.github_clone_url = self.github_clone_url + self.credentials.username + "/"
 
@@ -53,35 +56,37 @@ class Command():
     def get_repos(self):
         if "org" in self.params:
             self.get_org_repos(self.params["org"])
-        else:    
+        else:
             self.get_user_repos()
-        
+
     def get_org_repos(self, org):
         print("Feching repos from org:" + org)
-        r = requests.get(self.github_api_url + "/orgs/" + org + "/repos", auth=(self.credentials.username, self.credentials.password))
+        r = requests.get(self.github_api_url + "/orgs/" + org + "/repos",
+                         auth=(self.credentials.username, self.credentials.password))
         if(r.status_code == 200):
             repos_json = r.json()
-            
+
             for repo_json in repos_json:
                 self.repos.append(repo_json["name"])
-        
+
             print(self.repos)
         else:
             print(r.status_code)
 
     def get_user_repos(self):
         print("Feching repos from user:" + self.credentials.username)
-        r = requests.get(self.github_api_url + "/users/" + self.credentials.username + "/repos", auth=(self.credentials.username, self.credentials.password))
-        
+        r = requests.get(self.github_api_url + "/users/" + self.credentials.username +
+                         "/repos", auth=(self.credentials.username, self.credentials.password))
+
         if(r.status_code == 200):
             repos_json = r.json()
-            
+
             for repo_json in repos_json:
                 self.repos.append(repo_json["name"])
-            
+
             print(self.repos)
         else:
-            print(r.status_code)   
+            print(r.status_code)
 
     def clone(self, repo):
         print("Now cloning " + repo)
@@ -89,11 +94,23 @@ class Command():
         os.mkdir(self.workspace)
         repo_obj = Repo()
         self.set_github_clone_url(repo)
-        
+
         try:
             cloned_repo = repo_obj.clone_from(self.github_clone_url, self.workspace)
         except Exception as e:
             print(e)
+
+    def find_and_replace(self, file_path, find, replace):
+        # Read in the file
+        with open(file_path, 'r') as file:
+            filedata = file.read()
+
+        # Replace the target string
+        filedata = filedata.replace(find, replace)
+
+        # Write the file out again
+        with open(file_path, 'w') as file:
+            file.write(filedata)
 
     def execute(self):
         self.set_github_api_url()
@@ -101,10 +118,11 @@ class Command():
         print(self.repos)
         for repo in self.repos:
             self.clone(repo)
-            # self.find_and_replace()
+            self.find_and_replace(self.workspace + "/" + self.params["file_path"], self.params["find"], self.params["replace"])
             # self.commit()
             # self.PR()
             shutil.rmtree(self.workspace, onerror=onerror)
+
 
 def onerror(func, path, exc_info):
     """
@@ -117,10 +135,12 @@ def onerror(func, path, exc_info):
 
     Usage : ``shutil.rmtree(path, onerror=onerror)``
     """
-    
+
     if not os.access(path, os.W_OK):
         # Is the error an access error ?
         os.chmod(path, stat.S_IWUSR)
         func(path)
     else:
         raise Exception
+
+
