@@ -100,18 +100,23 @@ class Command():
             print(e)
 
     def find_and_replace(self, file_path, find, replace):
-        # Read in the file
-        with open(file_path, 'r') as file:
-            filedata = file.read()
+        try:
+            # Read in the file
+            with open(file_path, 'r') as file:
+                filedata = file.read()
 
-        # Replace the target string
-        filedata = filedata.replace(find, replace)
+            # Replace the target string
+            filedata = filedata.replace(find, replace)
 
-        # Write the file out again
-        with open(file_path, 'w') as file:
-            file.write(filedata)
-        
-        print("Find and replace done")
+            # Write the file out again
+            with open(file_path, 'w') as file:
+                file.write(filedata)
+            
+            print("Find and replace done")
+            return True
+        except Exception as e:
+            print(e)
+            return False
 
     def create_new_branch(self):
         arr = self.params["file_path"].split("/")
@@ -142,10 +147,11 @@ class Command():
         for repo in self.repos:
             self.clone(repo)
             self.create_new_branch()
-            self.find_and_replace(self.workspace + "/" + self.params["file_path"], self.params["find"], self.params["replace"])
-            self.stage()
-            self.commit()
-            self.push()
+            file_found = self.find_and_replace(self.workspace + "/" + self.params["file_path"], self.params["find"], self.params["replace"])
+            if(file_found):    
+                self.stage()
+                self.commit()
+                self.push()
             self.cloned_repo.__del__()
             # self.raise_PR()
             shutil.rmtree(self.workspace, onerror=onerror)
