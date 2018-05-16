@@ -188,8 +188,8 @@ class Command():
                 self.stage()
                 self.commit()
                 self.push()
+                self.raise_PR(repo["name"], repo["default_branch"])
             self.cloned_repo.__del__()
-            self.raise_PR(repo["name"], repo["default_branch"])
             shutil.rmtree(self.workspace, onerror=onerror)
 
 
