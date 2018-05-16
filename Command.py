@@ -172,8 +172,18 @@ class Command():
             print("Pull request raised, titled: " + json_to_send["title"])
         if r.status_code == 422:
             print("PR already exist")
+            self.close_PR(url + "/1")
         else: 
             print(r.status_code)
+
+    #needs refactoring to class RemoteManager
+    def close_PR(self, url):
+        json_to_send = {
+            "state": "closed"
+        }
+        r = requests.patch(url, json=json_to_send, auth=(self.credentials.username, self.credentials.password))
+        if r.status_code == 201:
+            print("Pull request closed")
 
     def execute(self):
         self.set_github_api_url()
