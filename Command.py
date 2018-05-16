@@ -4,6 +4,7 @@ import shutil
 import sys  # sys.exit
 import traceback
 import stat
+import json
 
 import requests
 from git import Repo
@@ -68,10 +69,7 @@ class Command():
             repos_json = r.json()
 
             for repo_json in repos_json:
-                repo = {}
-                repo["name"] = repo_json["name"]
-                repo["default_branch"] = repo_json["default_branch"]
-                self.repos.append(repo)
+                self.append_to_repos(repo_json)
 
             print(self.repos)
         else:
@@ -86,11 +84,17 @@ class Command():
             repos_json = r.json()
 
             for repo_json in repos_json:
-                self.repos.append(repo_json["name"])
+                self.append_to_repos(repo_json)
 
             print(self.repos)
         else:
             print(r.status_code)
+
+    def append_to_repos(self, repo_json):
+        repo = {}
+        repo["name"] = repo_json["name"]
+        repo["default_branch"] = repo_json["default_branch"]
+        self.repos.append(repo)
 
     def clone(self, repo):
         print("Now cloning " + repo)
@@ -98,7 +102,8 @@ class Command():
         self.set_github_clone_url(repo)
 
         try:
-            self.cloned_repo = self.repo_obj.clone_from(self.github_clone_url, self.workspace)
+            self.cloned_repo = self.repo_obj.clone_from(
+                self.github_clone_url, self.workspace)
         except Exception as e:
             print(e)
 
@@ -114,7 +119,7 @@ class Command():
             # Write the file out again
             with open(file_path, 'w') as file:
                 file.write(filedata)
-            
+
             print("Find and replace done")
             return True
         except Exception as e:
@@ -133,31 +138,57 @@ class Command():
     def stage(self):
         git = self.cloned_repo.git
         git.add("--all")
-        
-    def commit(self):        
+
+    def commit(self):
         self.cloned_repo.index.commit("droggo commit")
 
     def push(self):
-        remote = self.github_clone_url[:8] + self.credentials.username + ":" + self.credentials.password + "@" + self.github_clone_url[8:]
+        remote = self.github_clone_url[:8] + self.credentials.username + \
+            ":" + self.credentials.password + "@" + self.github_clone_url[8:]
         git = self.cloned_repo.git
-        git.push(remote, "--force", self.new_branch_name + ":" + self.new_branch_name)
+        git.push(remote, "--force", self.new_branch_name +
+                 ":" + self.new_branch_name)
         print("Pushed to remote")
+
+    def raise_PR(self, repo_name, base_branch):
+        params = dict(self.params)
+        del params["credentials"]
+        data = {
+            "title": "Droggo found" + self.params["find"] + " and replaced with " + self.params["replace"],
+            "body": json.dumps(params),
+            "head": self.credentials.username + ":" + self.new_branch_name,
+            "base": base_branch
+        }
+
+        if "org" in self.params:
+            url = self.github_api_url + "/repos/" + self.params["org"] + "/" + repo_name + "/pulls"
+        else:
+            url = self.github_api_url + "/repos/" + self.credentials.username + "/" + repo_name + "/pulls"
+
+        print(url)
+        r = requests.post(url, data=data, auth=(self.credentials.username, self.credentials.password))
+        if r.status_code == 201:
+            print("Pull request raised, titled: " + data["title"])
+        else: 
+            print(r.status_code)
 
     def execute(self):
         self.set_github_api_url()
         self.get_repos()
         print(self.repos)
         for repo in self.repos:
-            self.clone(repo)
+            self.clone(repo["name"])
             self.create_new_branch()
-            file_found = self.find_and_replace(self.workspace + "/" + self.params["file_path"], self.params["find"], self.params["replace"])
-            if(file_found):    
+            file_found = self.find_and_replace(
+                self.workspace + "/" + self.params["file_path"], self.params["find"], self.params["replace"])
+            if(file_found):
                 self.stage()
                 self.commit()
                 self.push()
             self.cloned_repo.__del__()
-            # self.raise_PR()
+            self.raise_PR(repo["name"], repo["default_branch"])
             shutil.rmtree(self.workspace, onerror=onerror)
+
 
 def onerror(func, path, exc_info):
     """
@@ -177,5 +208,3 @@ def onerror(func, path, exc_info):
         func(path)
     else:
         raise Exception
-
-
