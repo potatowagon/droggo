@@ -22,12 +22,13 @@ class Command():
     github_api_url = None
     github_clone_url = None
     workspace = "./wip"
+    cloned_repo = None
+    repo_obj = Repo()
+    new_branch = None
 
     def __init__(self, params):
         self.params = params
         self.credentials = Credentials.Credentials(params["credentials"])
-
-    set
 
     def set_github_api_url(self):
         if "host_name" in self.params:
@@ -90,27 +91,54 @@ class Command():
 
     def clone(self, repo):
         print("Now cloning " + repo)
-        join = osp.join
         os.mkdir(self.workspace)
-        repo_obj = Repo()
         self.set_github_clone_url(repo)
 
         try:
-            cloned_repo = repo_obj.clone_from(self.github_clone_url, self.workspace)
+            self.cloned_repo = self.repo_obj.clone_from(self.github_clone_url, self.workspace)
         except Exception as e:
             print(e)
 
     def find_and_replace(self, file_path, find, replace):
-        # Read in the file
-        with open(file_path, 'r') as file:
-            filedata = file.read()
+        try:
+            # Read in the file
+            with open(file_path, 'r') as file:
+                filedata = file.read()
 
-        # Replace the target string
-        filedata = filedata.replace(find, replace)
+            # Replace the target string
+            filedata = filedata.replace(find, replace)
 
-        # Write the file out again
-        with open(file_path, 'w') as file:
-            file.write(filedata)
+            # Write the file out again
+            with open(file_path, 'w') as file:
+                file.write(filedata)
+            
+            print("Find and replace done")
+            return True
+        except Exception as e:
+            print(e)
+            return False
+
+    def create_new_branch(self):
+        arr = self.params["file_path"].split("/")
+        arr = arr[len(arr) - 1]
+        file_name = arr.split(".")[0]
+        self.new_branch_name = 'droggo-' + file_name
+        new_branch = self.cloned_repo.create_head(self.new_branch_name)
+        print("New branch created: " + self.new_branch_name)
+        new_branch.checkout()
+
+    def stage(self):
+        git = self.cloned_repo.git
+        git.add("--all")
+        
+    def commit(self):        
+        self.cloned_repo.index.commit("droggo commit")
+
+    def push(self):
+        remote = self.github_clone_url[:8] + self.credentials.username + ":" + self.credentials.password + "@" + self.github_clone_url[8:]
+        git = self.cloned_repo.git
+        git.push(remote, "--force", self.new_branch_name + ":" + self.new_branch_name)
+        print("Pushed to remote")
 
     def execute(self):
         self.set_github_api_url()
@@ -118,11 +146,15 @@ class Command():
         print(self.repos)
         for repo in self.repos:
             self.clone(repo)
-            self.find_and_replace(self.workspace + "/" + self.params["file_path"], self.params["find"], self.params["replace"])
-            # self.commit()
-            # self.PR()
+            self.create_new_branch()
+            file_found = self.find_and_replace(self.workspace + "/" + self.params["file_path"], self.params["find"], self.params["replace"])
+            if(file_found):    
+                self.stage()
+                self.commit()
+                self.push()
+            self.cloned_repo.__del__()
+            # self.raise_PR()
             shutil.rmtree(self.workspace, onerror=onerror)
-
 
 def onerror(func, path, exc_info):
     """
