@@ -153,8 +153,9 @@ class Command():
     def raise_PR(self, repo_name, base_branch):
         params = dict(self.params)
         del params["credentials"]
-        data = {
-            "title": "Droggo found" + self.params["find"] + " and replaced with " + self.params["replace"],
+        print(json.dumps(params))
+        json_to_send = {
+            "title": "Droggo found " + self.params["find"] + " and replaced with " + self.params["replace"],
             "body": json.dumps(params),
             "head": self.credentials.username + ":" + self.new_branch_name,
             "base": base_branch
@@ -166,9 +167,9 @@ class Command():
             url = self.github_api_url + "/repos/" + self.credentials.username + "/" + repo_name + "/pulls"
 
         print(url)
-        r = requests.post(url, data=data, auth=(self.credentials.username, self.credentials.password))
+        r = requests.post(url, json=json_to_send, auth=(self.credentials.username, self.credentials.password))
         if r.status_code == 201:
-            print("Pull request raised, titled: " + data["title"])
+            print("Pull request raised, titled: " + json_to_send["title"])
         else: 
             print(r.status_code)
 
