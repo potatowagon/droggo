@@ -170,6 +170,8 @@ class Command():
         r = requests.post(url, json=json_to_send, auth=(self.credentials.username, self.credentials.password))
         if r.status_code == 201:
             print("Pull request raised, titled: " + json_to_send["title"])
+        if r.status_code == 422:
+            print("PR already exist")
         else: 
             print(r.status_code)
 
