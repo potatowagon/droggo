@@ -30,8 +30,6 @@ class Command():
         self.params = params
         self.credentials = Credentials.Credentials(params["credentials"])
 
-    set
-
     def set_github_api_url(self):
         if "host_name" in self.params:
             host_name = self.params["host_name"]
@@ -148,6 +146,7 @@ class Command():
             self.stage()
             self.commit()
             self.push()
+            self.cloned_repo.__del__()
             # self.raise_PR()
             shutil.rmtree(self.workspace, onerror=onerror)
 
