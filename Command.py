@@ -68,7 +68,10 @@ class Command():
             repos_json = r.json()
 
             for repo_json in repos_json:
-                self.repos.append(repo_json["name"])
+                repo = {}
+                repo["name"] = repo_json["name"]
+                repo["default_branch"] = repo_json["default_branch"]
+                self.repos.append(repo)
 
             print(self.repos)
         else:
