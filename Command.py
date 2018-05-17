@@ -101,9 +101,11 @@ class Command():
         os.mkdir(self.workspace)
         self.set_github_clone_url(repo)
 
+        remote = self.github_clone_url[:8] + self.credentials.username + \
+            ":" + self.credentials.password.replace("@", "%40") + "@" + self.github_clone_url[8:]
+
         try:
-            self.cloned_repo = self.repo_obj.clone_from(
-                self.github_clone_url, self.workspace)
+            self.cloned_repo = self.repo_obj.clone_from(remote, self.workspace)
         except Exception as e:
             print(e)
 
@@ -146,7 +148,7 @@ class Command():
         remote = self.github_clone_url[:8] + self.credentials.username + \
             ":" + self.credentials.password + "@" + self.github_clone_url[8:]
         git = self.cloned_repo.git
-        git.push(remote, "--force", self.new_branch_name +
+        git.push(remote, self.new_branch_name +
                  ":" + self.new_branch_name)
         print("Pushed to remote")
 
