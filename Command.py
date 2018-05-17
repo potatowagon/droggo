@@ -155,7 +155,7 @@ class Command():
         del params["credentials"]
         print(json.dumps(params))
         json_to_send = {
-            "title": "Droggo found " + self.params["find"] + " and replaced with " + self.params["replace"],
+            "title": "Droggo found '" + self.params["find"] + "' and replaced with '" + self.params["replace"] + "'",
             "body": json.dumps(params),
             "head": self.credentials.username + ":" + self.new_branch_name,
             "base": base_branch
