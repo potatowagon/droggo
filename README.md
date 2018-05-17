@@ -41,7 +41,8 @@ Order of parameters dont matter.
 Clone this repo or download as Zip. Releases coming soon, work in production.
 
 ### Installation
-cd to the droggo folder
+
 ```
+cd path/to/droggo
 pip install -r requirements.txt
 ```
