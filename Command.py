@@ -97,6 +97,7 @@ class Command():
         self.repos.append(repo)
 
     def clone(self, repo):
+        os.environ['GIT_LFS_SKIP_SMUDGE'] = '1'
         print("Now cloning " + repo)
         os.mkdir(self.workspace)
         self.set_github_clone_url(repo)
