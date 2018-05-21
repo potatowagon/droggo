@@ -147,9 +147,9 @@ class Command():
 
     def push(self):
         remote = self.github_clone_url[:8] + self.credentials.username + \
-            ":" + self.credentials.password + "@" + self.github_clone_url[8:]
+            ":" + self.credentials.password.replace("@", "%40") + "@" + self.github_clone_url[8:]
         git = self.cloned_repo.git
-        git.push(remote, self.new_branch_name +
+        git.push(remote, "--force", self.new_branch_name +
                  ":" + self.new_branch_name)
         print("Pushed to remote")
 
