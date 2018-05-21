@@ -143,7 +143,15 @@ class Command():
         git.add("--all")
 
     def commit(self):
-        self.cloned_repo.index.commit("droggo commit")
+        retry = 2
+        while (retry):
+            try:
+                self.cloned_repo.index.commit("droggo commit")
+                break
+            except Exception as e:
+                shutil.rmtree(self.workspace + "/.git/hooks")
+                retry = retry - 1
+
 
     def push(self):
         remote = self.github_clone_url[:8] + self.credentials.username + \
