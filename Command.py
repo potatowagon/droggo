@@ -164,12 +164,13 @@ class Command():
     def raise_PR(self, repo_name, base_branch):
         params = dict(self.params)
         del params["credentials"]
-        print(json.dumps(params))
+       
         json_to_send = {
             "title": "Droggo found '" + self.params["find"] + "' and replaced with '" + self.params["replace"] + "'",
             "body": json.dumps(params),
             "head": self.credentials.username + ":" + self.new_branch_name,
-            "base": base_branch
+            "base": base_branch,
+            "maintainer_can_modify": True
         }
 
         if "org" in self.params:
@@ -181,8 +182,10 @@ class Command():
         r = requests.post(url, json=json_to_send, auth=(self.credentials.username, self.credentials.password))
         if r.status_code == 201:
             print("Pull request raised, titled: " + json_to_send["title"])
-        if r.status_code == 422:
-            print("PR already exist")
+        elif r.status_code == 422:
+            print(r.content)
+            print(r.text)
+            print(r.json)
         else: 
             print(r.status_code)
 
