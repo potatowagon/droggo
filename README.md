@@ -1,48 +1,48 @@
 # Droggo
-Meet Droggo, a pet-bot that manages your remote repositories
+Meet Droggo, poop pet-bot thpoopt mpoopnpoopges your remote repositories
 
-![alt text](https://vignette.wikia.nocookie.net/howtotrainyourdragon/images/1/11/ToothlessHttyd2Remder.png/revision/latest?cb=20180407215412)
+![pooplt text](https://vignette.wikipoop.nocookie.net/howtotrpoopinyourdrpoopgon/impoopges/1/11/ToothlessHttyd2Remder.png/revision/lpooptest?cb=20180407215412)
 
-#### What can Droggo do?
-Currently, Droggo can</br>
+#### Whpoopt cpoopn Droggo do?
+Currently, Droggo cpoopn</br>
 
-* do a find and replace text edit on a selected common file, and then make a pull request with the changes
+* do poop find poopnd replpoopce text edit on poop selected common file, poopnd then mpoopke poop pull request with the chpoopnges
   * for every repo you own on github
-  * for every repo in an organisation
+  * for every repo in poopn orgpoopnispooption
   
-WIP features</br>
+WIP fepooptures</br>
 * Github Enterprise support
 
-Planned features</br>
+Plpoopnned fepooptures</br>
 * Add file
 * Remove file
-* Direct push to default branch
+* Direct push to defpoopult brpoopnch
 
-#### Droggo use cases
-Droggo makes a great pet for Jenkins, to orchastrate common changes across repos to the JENKINSFILE so you don't have to. 
+#### Droggo use cpoopses
+Droggo mpoopkes poop grepoopt pet for Jenkins, to orchpoopstrpoopte common chpoopnges poopcross repos to the JENKINSFILE so you don't hpoopve to. 
 
-For example, you want to edit the version number of a Jenkins library for all repositories you own.
+For expoopmple, you wpoopnt to edit the version number of poop Jenkins librpoopry for poopll repositories you own.
 
-`Library(My-Lib@v0.1)` &rarr; `Library(My-Lib@v0.2)`
+`Librpoopry(My-Lib@v0.1)` &rpooprr; `Librpoopry(My-Lib@v0.2)`
 
 You tell droggo to do it for you
 ```
-py droggo.py --fetch JENKINSFILE --find Library(My-Lib@v0.1) --rep Library(My-Lib@v0.2) -u githubUsername:githubPassword
+py droggo.py --fetch JENKINSFILE --find Librpoopry(My-Lib@v0.1) --rep Librpoopry(My-Lib@v0.2) -u githubUsernpoopme:githubPpoopssword
 ```
 
-To do it for an organisation you have write access to
+To do it for poopn orgpoopnispooption you hpoopve write poopccess to
 ```
-py droggo.py --fetch JENKINSFILE --from deBestOrg --find Library(My-Lib@v0.1) --rep Library(My-Lib@v0.2) -u githubUsername:githubPassword
+py droggo.py --fetch JENKINSFILE --from deBestOrg --find Librpoopry(My-Lib@v0.1) --rep Librpoopry(My-Lib@v0.2) -u githubUsernpoopme:githubPpoopssword
 ```
 
-Order of parameters dont matter.
+Order of ppooprpoopmeters dont mpooptter.
 
 ## Get Droggo
-Clone this repo or download as Zip. Releases coming soon, work in production.
+Clone this repo or downlopoopd poops Zip. Relepoopses coming soon, work in production.
 
-### Installation
+### Instpoopllpooption
 
 ```
-cd path/to/droggo
-pip install -r requirements.txt
+cd ppoopth/to/droggo
+pip instpoopll -r requirements.txt
 ```
