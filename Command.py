@@ -10,10 +10,9 @@ import requests
 from git import Repo
 
 import Credentials
-import Logging
+import logging
 
-#log = Logging.Log
-
+logging.basicConfig(filename='droggolog.txt',level=logging.INFO)
 
 class Command():
 
@@ -38,6 +37,8 @@ class Command():
         else:
             self.github_api_url = "https://api.github.com"
         print("API calls made to " + self.github_api_url)
+        logging.info("API calls made to " + self.github_api_url)
+
 
     def set_github_clone_url(self, repo):
         self.github_clone_url = "https://"
@@ -99,6 +100,7 @@ class Command():
     def clone(self, repo):
         os.environ['GIT_LFS_SKIP_SMUDGE'] = '1'
         print("Now cloning " + repo)
+        logging.info("Now cloning " + repo)
         os.mkdir(self.workspace)
         self.set_github_clone_url(repo)
 
@@ -109,6 +111,7 @@ class Command():
             self.cloned_repo = self.repo_obj.clone_from(remote, self.workspace)
         except Exception as e:
             print(e)
+            logging.info(e)
 
     def find_and_replace(self, file_path, find, replace):
         try:
@@ -124,9 +127,11 @@ class Command():
                 file.write(filedata)
 
             print("Find and replace done")
+            logging.info("Find and replace done")
             return True
         except Exception as e:
             print(e)
+            logging.info(e)
             return False
 
     def create_new_branch(self):
@@ -160,6 +165,7 @@ class Command():
         git.push(remote, "--force", self.new_branch_name +
                  ":" + self.new_branch_name)
         print("Pushed to remote")
+        logging.info("Pushed to remote")
 
     def raise_PR(self, repo_name, base_branch):
         params = dict(self.params)
@@ -194,6 +200,7 @@ class Command():
         self.get_repos()
         print(self.repos)
         for repo in self.repos:
+            logging.info("Working on " + repo["name"] + " ......")
             self.clone(repo["name"])
             self.create_new_branch()
             file_found = self.find_and_replace(

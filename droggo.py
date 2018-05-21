@@ -20,15 +20,16 @@ def main():
         sys.exit(1)
 
     try:
-        log.debug(sys.argv)
         parser = Parser.ParameterMapper(sys.argv)
-        print(parser.params)
         command = Command.Command(parser.params)
         command.execute()
 
     except Exception as e:
         print(e)
         sys.exit(1)
+
+    finally:
+        log.__del__()
 
 if __name__ == "__main__":
     main()
