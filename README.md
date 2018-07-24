@@ -9,9 +9,6 @@ Currently, Droggo can</br>
 * do a find and replace text edit on a selected common file, and then make a pull request with the changes
   * for every repo you own on github
   * for every repo in an organisation
-  
-WIP features</br>
-* Github Enterprise support
 
 Planned features</br>
 * Add file
